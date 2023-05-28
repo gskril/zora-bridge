@@ -54,6 +54,7 @@ function App() {
   return (
     <main>
       <h1>BRIDGE TO ZORA</h1>
+      <span>(TESTNET)</span>
       <h2>
         <a href="https://youtu.be/T2TDSEG57hI?t=101" target="_blank">
           "CLOSE YOUR EYES
@@ -103,14 +104,7 @@ function App() {
             {chain?.id === 5 ? (
               <>
                 <div className="input-wrapper">
-                  <label
-                    htmlFor="input"
-                    style={{
-                      letterSpacing: 'initial',
-                    }}
-                  >
-                    ETH
-                  </label>
+                  <label htmlFor="input">ETH</label>
                   <input
                     className="input"
                     id="input"

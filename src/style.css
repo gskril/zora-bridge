@@ -30,12 +30,17 @@ main {
 
 h1 {
   font-size: var(--font-size-lg);
-  margin-bottom: 2rem;
 }
 
 h2 {
   font-size: var(--font-size-lg);
+  margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+span,
+label {
+  letter-spacing: initial;
 }
 
 .input-group {
