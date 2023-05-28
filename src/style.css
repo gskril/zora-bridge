@@ -4,6 +4,11 @@
   --font-size-sm: 1.125rem;
 }
 
+@font-face {
+  font-family: 'Arial Narrow';
+  src: url('/font/Arial-Narrow-Bold.ttf');
+}
+
 body {
   font-family: 'Arial Narrow', Arial;
   font-size: var(--font-size-sm);
