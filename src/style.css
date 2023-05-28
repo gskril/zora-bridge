@@ -1,7 +1,15 @@
+:root {
+  --font-size-lg: 2.25rem;
+  --font-size-md: 1.5rem;
+  --font-size-sm: 1.125rem;
+}
+
 body {
   font-family: 'Arial Narrow', Arial;
-  font-size: 1.125rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.0625rem;
 }
 
 main {
@@ -15,7 +23,12 @@ main {
 }
 
 h1 {
-  font-size: 2.25rem;
+  font-size: var(--font-size-lg);
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: var(--font-size-lg);
   margin-bottom: 2rem;
 }
 
@@ -33,7 +46,7 @@ button {
 
 .button {
   background-color: #000;
-  font-size: 1.25rem;
+  font-size: var(--font-size-md);
   color: #fff;
   border: none;
   border-radius: 0;
@@ -50,5 +63,15 @@ button {
 }
 
 .input {
-  width: 6.5rem;
+  width: 7.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0;
+  border: 0.125rem solid #000;
+  background-color: transparent;
+}
+
+@media screen and (max-width: 34em) {
+  :root {
+    --font-size-lg: 1.75rem;
+  }
 }

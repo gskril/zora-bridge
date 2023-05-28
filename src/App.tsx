@@ -44,6 +44,13 @@ function App() {
   return (
     <main>
       <h1>BRIDGE TO ZORA</h1>
+      <h2>
+        <a href="https://youtu.be/T2TDSEG57hI?t=101" target="_blank">
+          "CLOSE YOUR EYES
+          <br />
+          BUT KEEP YOUR MIND WIDE OPEN"
+        </a>
+      </h2>
 
       <div className="input-group">
         {!address ? (
@@ -90,7 +97,9 @@ function App() {
                 <button
                   className="button"
                   disabled={
-                    !transaction.sendTransaction || debouncedAmountEth <= 0
+                    !transaction.sendTransaction ||
+                    debouncedAmountEth <= 0 ||
+                    amountEth !== debouncedAmountEth
                   }
                   onClick={() => transaction.sendTransaction?.()}
                 >
