@@ -22,14 +22,17 @@ function App() {
   const { openConnectModal } = useConnectModal()
   const { switchNetwork } = useSwitchNetwork({ chainId: 5 })
 
-  const [amountEth, setAmountEth] = useState<number>(0.1)
-  const debouncedAmountEth = useDebounce(amountEth, 500)
+  const [amountEth, setAmountEth] = useState<string>('0.1')
+  const debouncedEth = useDebounce(amountEth, 500)
+  const numberRegex = /^\d*\.?\d*$/
 
   const prepare = usePrepareSendTransaction({
     chainId: 5,
     to: '0x7cc09ac2452d6555d5e0c213ab9e2d44efbfc956',
-    value: parseEther(`${debouncedAmountEth}`, 'wei'),
-    enabled: debouncedAmountEth > 0,
+    value: numberRegex.test(debouncedEth)
+      ? parseEther(`${Number(debouncedEth)}`, 'wei')
+      : undefined,
+    enabled: numberRegex.test(debouncedEth) && Number(debouncedEth) > 0,
   })
 
   const transaction = useSendTransaction(prepare.config)
@@ -95,13 +98,11 @@ function App() {
                   <input
                     className="input"
                     id="input"
-                    type="number"
-                    placeholder="Amount"
+                    type="text"
+                    inputMode="decimal"
                     value={amountEth}
-                    step={0.05}
-                    min={0}
                     disabled={transaction.isLoading}
-                    onChange={(e) => setAmountEth(Number(e.target.value))}
+                    onChange={(e) => setAmountEth(e.target.value)}
                   />
                 </div>
 
@@ -109,8 +110,9 @@ function App() {
                   className="button"
                   disabled={
                     !transaction.sendTransaction ||
-                    debouncedAmountEth <= 0 ||
-                    amountEth !== debouncedAmountEth
+                    amountEth !== debouncedEth ||
+                    Number(debouncedEth) <= 0 ||
+                    !numberRegex.test(debouncedEth)
                   }
                   onClick={() => transaction.sendTransaction?.()}
                 >
