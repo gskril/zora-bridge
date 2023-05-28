@@ -22,16 +22,24 @@ function App() {
   const { disconnect } = useDisconnect()
   const { openConnectModal } = useConnectModal()
   const { switchNetwork } = useSwitchNetwork({ chainId: 5 })
+
   const {
     addChain,
     isLoading: addNetworkIsLoading,
-    isSuccess: addNetworkIsSuccess,
+    isSuccess: _addNetworkIsSuccess,
     isEnabled: isMetaMask,
   } = useAddChain(zoraChain)
 
+  const [addNetworkIsSuccess, setAddNetworkIsSuccess] = useState(false)
   const [amountEth, setAmountEth] = useState<string>('0.1')
   const debouncedEth = useDebounce(amountEth, 500)
   const numberRegex = /^\d*\.?\d*$/
+
+  useEffect(() => {
+    if (_addNetworkIsSuccess) {
+      setAddNetworkIsSuccess(true)
+    }
+  }, [_addNetworkIsSuccess])
 
   const prepare = usePrepareSendTransaction({
     chainId: 5,
@@ -71,33 +79,42 @@ function App() {
         ) : receipt.isSuccess ? (
           <>
             {!isMetaMask || addNetworkIsSuccess ? (
-              <a
-                className="button"
-                target="_blank"
-                href={`https://goerli.etherscan.io/tx/${receipt.data?.transactionHash}`}
-              >
-                SUCCESS
-              </a>
+              <>
+                <a
+                  className="button"
+                  target="_blank"
+                  href={`https://testnet.explorer.zora.co/address/${address}`}
+                >
+                  VIEW ON ZORA EXPLORER
+                </a>
+                <p>OURS TRULY, ☾☼☽</p>
+              </>
             ) : (
-              <button className="button" onClick={() => addChain?.()}>
-                <LoadingText loading={addNetworkIsLoading}>
-                  ADD NETWORK TO 🦊
-                </LoadingText>
-              </button>
+              <>
+                <button className="button" onClick={() => addChain?.()}>
+                  <LoadingText loading={addNetworkIsLoading}>
+                    ADD NETWORK TO 🦊
+                  </LoadingText>
+                </button>
+                <button onClick={() => setAddNetworkIsSuccess(true)}>
+                  SKIP
+                </button>
+              </>
             )}
-
-            <p>OURS TRULY, ☾☼☽</p>
           </>
         ) : transaction.data?.hash ? (
           <>
-            <a
-              className="button"
-              target="_blank"
-              href={`https://goerli.etherscan.io/tx/${transaction.data.hash}`}
-            >
+            <div className="button">
               <LoadingText>BRIDGING</LoadingText>
-            </a>
-            <button onClick={() => disconnect?.()}>DISCONNECT</button>
+            </div>
+            <span>
+              <a
+                target="_blank"
+                href={`https://goerli.etherscan.io/tx/${transaction.data?.hash}`}
+              >
+                VIEW ON ETHERSCAN
+              </a>
+            </span>
           </>
         ) : (
           <>
