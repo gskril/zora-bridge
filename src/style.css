@@ -1,0 +1,13 @@
+body {
+  font-family: 'Arial Narrow', Arial;
+}
+
+main {
+  padding: 1rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}

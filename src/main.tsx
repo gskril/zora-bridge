@@ -6,7 +6,8 @@ import '@rainbow-me/rainbowkit/styles.css'
 
 import { chains, wagmiConfig } from './providers.ts'
 import App from './App.tsx'
-import './index.css'
+import './normalize.css'
+import './style.css'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
