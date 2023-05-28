@@ -47,11 +47,11 @@ function App() {
             <a
               className="button"
               target="_blank"
-              href={`https://testnet.explorer.zora.co/address/${address}`}
+              href={`https://goerli.etherscan.io/tx/${receipt.data?.transactionHash}`}
             >
               SUCCESS
             </a>
-            <button onClick={() => disconnect?.()}>Disconnect</button>
+            <p>OURS TRULY, ☾☼☽</p>
           </>
         ) : transaction.data?.hash ? (
           <>
@@ -62,7 +62,7 @@ function App() {
             >
               <LoadingText>BRIDGING</LoadingText>
             </a>
-            <button onClick={() => disconnect?.()}>Disconnect</button>
+            <button onClick={() => disconnect?.()}>DISCONNECT</button>
           </>
         ) : (
           <>
@@ -94,7 +94,7 @@ function App() {
                 SWITCH NETWORK
               </button>
             )}
-            <button onClick={() => disconnect?.()}>Disconnect</button>
+            <button onClick={() => disconnect?.()}>DISCONNECT</button>
           </>
         )}
       </div>
