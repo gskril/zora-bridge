@@ -22,7 +22,7 @@ function App() {
   const { openConnectModal } = useConnectModal()
   const { switchNetwork } = useSwitchNetwork({ chainId: 5 })
 
-  const [amountEth, setAmountEth] = useState<number>(0)
+  const [amountEth, setAmountEth] = useState<number>(0.1)
   const debouncedAmountEth = useDebounce(amountEth, 500)
 
   const prepare = usePrepareSendTransaction({
