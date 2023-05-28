@@ -62,12 +62,23 @@ button {
   cursor: not-allowed;
 }
 
-.input {
-  width: 7.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0;
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   border: 0.125rem solid #000;
+  padding: 0.25rem 0.5rem;
+}
+
+.input {
+  width: 3.75rem;
+  border-radius: 0;
+  border: none;
   background-color: transparent;
+}
+
+.input:focus-visible {
+  outline: none;
 }
 
 @media screen and (max-width: 34em) {

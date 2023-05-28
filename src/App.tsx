@@ -83,16 +83,27 @@ function App() {
           <>
             {chain?.id === 5 ? (
               <>
-                <input
-                  className="input"
-                  type="number"
-                  placeholder="Amount"
-                  value={amountEth}
-                  step={0.05}
-                  min={0}
-                  disabled={transaction.isLoading}
-                  onChange={(e) => setAmountEth(Number(e.target.value))}
-                />
+                <div className="input-wrapper">
+                  <label
+                    htmlFor="input"
+                    style={{
+                      letterSpacing: 'initial',
+                    }}
+                  >
+                    ETH
+                  </label>
+                  <input
+                    className="input"
+                    id="input"
+                    type="number"
+                    placeholder="Amount"
+                    value={amountEth}
+                    step={0.05}
+                    min={0}
+                    disabled={transaction.isLoading}
+                    onChange={(e) => setAmountEth(Number(e.target.value))}
+                  />
+                </div>
 
                 <button
                   className="button"
@@ -103,7 +114,11 @@ function App() {
                   }
                   onClick={() => transaction.sendTransaction?.()}
                 >
-                  {transaction.isLoading ? 'CONFIRM IN WALLET' : 'BRIDGE'}
+                  {transaction.isLoading
+                    ? 'CONFIRM IN WALLET'
+                    : prepare.error?.name === 'EstimateGasExecutionError'
+                    ? 'INSUFFICIENT FUNDS'
+                    : 'BRIDGE'}
                 </button>
               </>
             ) : (
