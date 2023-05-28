@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 
-export function LoadingText({ children }: { children: string }) {
+export function LoadingText({
+  children,
+  loading = true,
+}: {
+  children: string
+  loading?: boolean
+}) {
   const [dots, setDots] = useState<string>('.')
   useEffect(() => {
     const interval = setInterval(() => {
@@ -12,7 +18,7 @@ export function LoadingText({ children }: { children: string }) {
   return (
     <span>
       {children}
-      {dots}
+      {loading && dots}
     </span>
   )
 }

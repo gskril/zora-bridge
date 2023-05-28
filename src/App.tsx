@@ -13,6 +13,7 @@ import { parseEther } from 'viem'
 
 import { LoadingText } from './components/LoadingText'
 import { plausible } from './plausible'
+import { useAddChain, zoraChain } from './hooks/useAddChain'
 import useDebounce from './hooks/useDebounce'
 
 function App() {
@@ -21,6 +22,12 @@ function App() {
   const { disconnect } = useDisconnect()
   const { openConnectModal } = useConnectModal()
   const { switchNetwork } = useSwitchNetwork({ chainId: 5 })
+  const {
+    addChain,
+    isLoading: addNetworkIsLoading,
+    isSuccess: addNetworkIsSuccess,
+    isEnabled: isMetaMask,
+  } = useAddChain(zoraChain)
 
   const [amountEth, setAmountEth] = useState<string>('0.1')
   const debouncedEth = useDebounce(amountEth, 500)
@@ -62,13 +69,22 @@ function App() {
           </button>
         ) : receipt.isSuccess ? (
           <>
-            <a
-              className="button"
-              target="_blank"
-              href={`https://goerli.etherscan.io/tx/${receipt.data?.transactionHash}`}
-            >
-              SUCCESS
-            </a>
+            {!isMetaMask || addNetworkIsSuccess ? (
+              <a
+                className="button"
+                target="_blank"
+                href={`https://goerli.etherscan.io/tx/${receipt.data?.transactionHash}`}
+              >
+                SUCCESS
+              </a>
+            ) : (
+              <button className="button" onClick={() => addChain?.()}>
+                <LoadingText loading={addNetworkIsLoading}>
+                  ADD NETWORK TO 🦊
+                </LoadingText>
+              </button>
+            )}
+
             <p>OURS TRULY, ☾☼☽</p>
           </>
         ) : transaction.data?.hash ? (
