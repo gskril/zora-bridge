@@ -1,5 +1,5 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   useAccount,
   useNetwork,
@@ -11,8 +11,9 @@ import {
 } from 'wagmi'
 import { parseEther } from 'viem'
 
-import useDebounce from './hooks/useDebounce'
 import { LoadingText } from './components/LoadingText'
+import { plausible } from './plausible'
+import useDebounce from './hooks/useDebounce'
 
 function App() {
   const { chain } = useNetwork()
@@ -25,13 +26,20 @@ function App() {
   const debouncedAmountEth = useDebounce(amountEth, 500)
 
   const prepare = usePrepareSendTransaction({
+    chainId: 5,
     to: '0x7cc09ac2452d6555d5e0c213ab9e2d44efbfc956',
-    value: parseEther(`${debouncedAmountEth}`, 'wei'), // in wei
+    value: parseEther(`${debouncedAmountEth}`, 'wei'),
     enabled: debouncedAmountEth > 0,
   })
 
   const transaction = useSendTransaction(prepare.config)
   const receipt = useWaitForTransaction({ hash: transaction.data?.hash })
+
+  useEffect(() => {
+    if (receipt.isSuccess) {
+      plausible.trackEvent('Bridge ETH')
+    }
+  }, [receipt.isSuccess])
 
   return (
     <main>
