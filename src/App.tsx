@@ -43,7 +43,7 @@ function App() {
 
   const prepare = usePrepareSendTransaction({
     chainId: 5,
-    to: '0x7cc09ac2452d6555d5e0c213ab9e2d44efbfc956',
+    to: '0xc2112491c6a6994f1aa299fa0a2a0397d7d2b438',
     value: numberRegex.test(debouncedEth)
       ? parseEther(`${Number(debouncedEth)}`, 'wei')
       : undefined,
