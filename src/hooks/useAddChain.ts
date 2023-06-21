@@ -11,12 +11,20 @@ interface AddChain {
   blockExplorerUrls: string[]
 }
 
-export const zoraChain: AddChain = {
-  chainId: '0x3e7', // 99
+export const zoraTestnet: AddChain = {
+  chainId: '0x3e7', // 999
   chainName: 'Zora Testnet',
   nativeCurrency: { symbol: 'ETH', decimals: 18 },
   rpcUrls: ['https://testnet.rpc.zora.co'],
   blockExplorerUrls: ['https://testnet.explorer.zora.co'],
+}
+
+export const zoraMainnet: AddChain = {
+  chainId: '0x76adf1', // 7777777
+  chainName: 'Zora',
+  nativeCurrency: { symbol: 'ETH', decimals: 18 },
+  rpcUrls: ['https://rpc.zora.co'],
+  blockExplorerUrls: ['https://explorer.zora.co'],
 }
 
 export function useAddChain(chain: AddChain) {

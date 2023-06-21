@@ -68,6 +68,7 @@ button {
   background-color: #9a9a9a;
 }
 
+button:disabled,
 .button:disabled,
 .input:disabled {
   cursor: not-allowed;
@@ -90,6 +91,16 @@ button {
 
 .input:focus-visible {
   outline: none;
+}
+
+.network-toggle {
+  font-size: initial;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.light {
+  opacity: 0.5;
 }
 
 @media screen and (max-width: 34em) {

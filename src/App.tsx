@@ -13,37 +13,63 @@ import { parseEther } from 'viem'
 
 import { LoadingText } from './components/LoadingText'
 import { plausible } from './plausible'
-import { useAddChain, zoraChain } from './hooks/useAddChain'
+import { useAddChain, zoraTestnet, zoraMainnet } from './hooks/useAddChain'
 import useDebounce from './hooks/useDebounce'
+import { buildEtherscanLink, buildZoraExplorerLink } from './utils'
 
 function App() {
   const { chain } = useNetwork()
   const { address } = useAccount()
   const { disconnect } = useDisconnect()
   const { openConnectModal } = useConnectModal()
-  const { switchNetwork } = useSwitchNetwork({ chainId: 5 })
+  const { switchNetwork: switchToGoerli, isLoading: isSwitchToGoerliLoading } =
+    useSwitchNetwork({ chainId: 5 })
+  const {
+    switchNetwork: switchToHomestead,
+    isLoading: isSwitchToHomesteadLoading,
+  } = useSwitchNetwork({ chainId: 1 })
 
   const {
-    addChain,
-    isLoading: addNetworkIsLoading,
-    isSuccess: _addNetworkIsSuccess,
+    addChain: addZoraTestnet,
+    isLoading: addZoraTestnetIsLoading,
+    isSuccess: _addZoraTestnetIsSuccess,
     isEnabled: isMetaMask,
-  } = useAddChain(zoraChain)
+  } = useAddChain(zoraTestnet)
 
-  const [addNetworkIsSuccess, setAddNetworkIsSuccess] = useState(false)
-  const [amountEth, setAmountEth] = useState<string>('0.1')
+  const {
+    addChain: addZoraMainnet,
+    isLoading: addZoraMainnetIsLoading,
+    isSuccess: _addZoraMainnetIsSuccess,
+  } = useAddChain(zoraMainnet)
+
+  const [isTestnet, setIsTestnet] = useState(true)
+  const [addZoraIsSuccess, setAddZoraIsSuccess] = useState(false)
+  const [amountEth, setAmountEth] = useState<string>('')
   const debouncedEth = useDebounce(amountEth, 500)
   const numberRegex = /^\d*\.?\d*$/
 
+  // make the default ETH amount lower on mainnet
   useEffect(() => {
-    if (_addNetworkIsSuccess) {
-      setAddNetworkIsSuccess(true)
+    if (isTestnet) {
+      setAmountEth('0.1')
+    } else {
+      setAmountEth('0.01')
     }
-  }, [_addNetworkIsSuccess])
+  }, [isTestnet])
+
+  const isCorrectChain = chain?.id === (isTestnet ? 5 : 1)
+
+  useEffect(() => {
+    if (_addZoraTestnetIsSuccess || _addZoraMainnetIsSuccess) {
+      setAddZoraIsSuccess(true)
+    }
+  }, [_addZoraTestnetIsSuccess, _addZoraMainnetIsSuccess])
 
   const prepare = usePrepareSendTransaction({
-    chainId: 5,
-    to: '0xDb9F51790365e7dc196e7D072728df39Be958ACe',
+    chainId: isTestnet ? 5 : 1,
+    to: isTestnet
+      ? '0xDb9F51790365e7dc196e7D072728df39Be958ACe'
+      : '0x1a0ad011913a150f69f6a19df447a0cfd9551054',
     value: numberRegex.test(debouncedEth)
       ? parseEther(`${Number(debouncedEth)}`, 'wei')
       : undefined,
@@ -55,14 +81,48 @@ function App() {
 
   useEffect(() => {
     if (receipt.isSuccess) {
-      plausible.trackEvent('Bridge ETH')
+      plausible.trackEvent('Bridge ETH', {
+        props: {
+          network: isTestnet ? 'testnet' : 'mainnet',
+        },
+      })
     }
-  }, [receipt.isSuccess])
+  }, [isTestnet, receipt.isSuccess])
 
   return (
     <main>
       <h1>BRIDGE TO ZORA</h1>
-      <span>(TESTNET)</span>
+      <div className="network-toggle">
+        <button
+          onClick={() => {
+            setIsTestnet(true)
+
+            // switch to goerli if not already on goerli
+            if (chain?.id !== 5) {
+              switchToGoerli?.()
+            }
+          }}
+          disabled={!!transaction?.data?.hash}
+          className={isTestnet ? '' : 'light'}
+        >
+          TESTNET
+        </button>
+        <span style={{ opacity: 0.5 }}>/</span>
+        <button
+          onClick={() => {
+            setIsTestnet(false)
+
+            // switch to homestead if not already on homestead
+            if (chain?.id !== 1) {
+              switchToHomestead?.()
+            }
+          }}
+          disabled={!!transaction?.data?.hash}
+          className={isTestnet ? 'light' : ''}
+        >
+          MAINNET
+        </button>
+      </div>
       <h2>
         <a href="https://youtu.be/T2TDSEG57hI?t=101" target="_blank">
           "CLOSE YOUR EYES
@@ -76,14 +136,21 @@ function App() {
           <button className="button" onClick={() => openConnectModal?.()}>
             CONNECT
           </button>
+        ) : receipt.isError ? (
+          <>
+            <div className="button">TRANSACTION FAILED :/</div>
+            <button onClick={() => window.location.reload()}>
+              REFRESH AND TRY AGAIN
+            </button>
+          </>
         ) : receipt.isSuccess ? (
           <>
-            {!isMetaMask || addNetworkIsSuccess ? (
+            {!isMetaMask || addZoraIsSuccess ? (
               <>
                 <a
                   className="button"
                   target="_blank"
-                  href={`https://testnet.explorer.zora.co/address/${address}`}
+                  href={buildZoraExplorerLink(chain?.id, address)}
                 >
                   VIEW ON ZORA EXPLORER
                 </a>
@@ -91,14 +158,23 @@ function App() {
               </>
             ) : (
               <>
-                <button className="button" onClick={() => addChain?.()}>
-                  <LoadingText loading={addNetworkIsLoading}>
+                <button
+                  className="button"
+                  onClick={() => {
+                    if (isTestnet) {
+                      addZoraTestnet?.()
+                    } else {
+                      addZoraMainnet?.()
+                    }
+                  }}
+                >
+                  <LoadingText
+                    loading={addZoraTestnetIsLoading || addZoraMainnetIsLoading}
+                  >
                     ADD NETWORK TO 🦊
                   </LoadingText>
                 </button>
-                <button onClick={() => setAddNetworkIsSuccess(true)}>
-                  SKIP
-                </button>
+                <button onClick={() => setAddZoraIsSuccess(true)}>SKIP</button>
               </>
             )}
           </>
@@ -110,7 +186,7 @@ function App() {
             <span>
               <a
                 target="_blank"
-                href={`https://goerli.etherscan.io/tx/${transaction.data?.hash}`}
+                href={buildEtherscanLink(chain?.id, transaction.data?.hash)}
               >
                 VIEW ON ETHERSCAN
               </a>
@@ -118,7 +194,7 @@ function App() {
           </>
         ) : (
           <>
-            {chain?.id === 5 ? (
+            {chain?.id === 5 || chain?.id === 1 ? (
               <>
                 <div className="input-wrapper">
                   <label htmlFor="input">ETH</label>
@@ -147,15 +223,36 @@ function App() {
                     ? 'CONFIRM IN WALLET'
                     : prepare.error?.name === 'EstimateGasExecutionError'
                     ? 'INSUFFICIENT FUNDS'
+                    : !isCorrectChain
+                    ? 'WRONG NETWORK'
                     : 'BRIDGE'}
                 </button>
               </>
             ) : (
-              <button className="button" onClick={() => switchNetwork?.()}>
+              <button className="button" onClick={() => switchToGoerli?.()}>
                 SWITCH NETWORK
               </button>
             )}
-            <button onClick={() => disconnect?.()}>DISCONNECT</button>
+
+            {!isCorrectChain ? (
+              <button
+                onClick={() => {
+                  if (isTestnet) {
+                    switchToGoerli?.()
+                  } else {
+                    switchToHomestead?.()
+                  }
+                }}
+              >
+                {isSwitchToGoerliLoading || isSwitchToHomesteadLoading ? (
+                  <LoadingText>SWITCH NETWORK</LoadingText>
+                ) : (
+                  'SWITCH NETWORK'
+                )}
+              </button>
+            ) : (
+              <button onClick={() => disconnect?.()}>DISCONNECT</button>
+            )}
           </>
         )}
       </div>
