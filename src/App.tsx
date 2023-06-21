@@ -123,6 +123,20 @@ function App() {
           MAINNET
         </button>
       </div>
+
+      {!isTestnet && (
+        <div
+          style={{
+            marginTop: '0.5rem',
+            padding: '0.3125rem 0.5rem',
+            background: 'rgba(0, 0, 0, 0.5)',
+            color: 'white',
+          }}
+        >
+          <span>⚠︎ MAINNET IS BRAND NEW. CONTINUE AT YOUR OWN RISK ⚠︎</span>
+        </div>
+      )}
+
       <h2>
         <a href="https://youtu.be/T2TDSEG57hI?t=101" target="_blank">
           "CLOSE YOUR EYES
