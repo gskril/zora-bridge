@@ -152,7 +152,13 @@ function App() {
           </button>
         ) : receipt.isError ? (
           <>
-            <div className="button">TRANSACTION FAILED :/</div>
+            <a
+              className="button"
+              target="_blank"
+              href={buildEtherscanLink(chain?.id, transaction.data?.hash || '')}
+            >
+              TRANSACTION FAILED :/
+            </a>
             <button onClick={() => window.location.reload()}>
               REFRESH AND TRY AGAIN
             </button>
