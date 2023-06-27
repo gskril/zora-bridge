@@ -73,6 +73,7 @@ function App() {
     value: numberRegex.test(debouncedEth)
       ? parseEther(`${Number(debouncedEth)}`, 'wei')
       : undefined,
+    gas: BigInt(130_000),
     enabled: numberRegex.test(debouncedEth) && Number(debouncedEth) > 0,
   })
 
